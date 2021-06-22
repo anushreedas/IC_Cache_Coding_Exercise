@@ -6,10 +6,11 @@ from random import randrange
 def generateLogs(directory,date):
     timestamp = int(datetime.timestamp(date))
     print(timestamp)
+    dirPath = os.path.join(directory,str(timestamp))
 
-    if not os.path.exists(directory):
+    if not os.path.exists(dirPath):
         print("Creating directory..")
-        os.mkdir(directory)
+        os.makedirs(dirPath)
 
     # for _ in range(1440):
     #
