@@ -4,12 +4,14 @@ where each server has 2 CPUs, and writes the data to csv files in the provided d
 
 @author : Anushree Das
 """
+import sys
 import math
 from datetime import datetime
 import os
 from random import randrange
 import ipaddress
 
+TODAY = datetime.now().now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 def createDirectory(dir_path):
     """
@@ -22,16 +24,16 @@ def createDirectory(dir_path):
         os.makedirs(dir_path)
 
 
-def generateLogs(DIRECTORY,date,no_of_servers, no_of_cpus):
+def generateLogs(DATA_PATH,date=TODAY,no_of_servers=1000, no_of_cpus=2):
     """
     Generates logs for the given number of servers for the given date
-    :param DIRECTORY:       path to directory where to save data
+    :param DATA_PATH:       path to directory where to save data
     :param date:            date for which to generate logs
     :param no_of_servers:   number of servers
     :param no_of_cpus:      number of CPUs
     :return:                None
     """
-    print('Generating logs for %d servers for date: %s'%(no_of_servers,date.date()))
+    print('Generating logs for %d servers at DATA_PATH=[%s] for date: %s'%(no_of_servers,DATA_PATH,date.date()))
 
     # get timestamp in Unix time for given date
     timestamp = int(datetime.timestamp(date))
@@ -43,7 +45,7 @@ def generateLogs(DIRECTORY,date,no_of_servers, no_of_cpus):
     ip_addresses = [str(ip) for ip in ipaddress.IPv4Network('192.168.0.0/'+str(mask))][:no_of_servers]
 
     for host_ip in ip_addresses:
-        server_path = os.path.join(DIRECTORY,host_ip)
+        server_path = os.path.join(DATA_PATH,host_ip)
         createDirectory(server_path)
 
         for cpu_id in range(1,no_of_cpus+1):
@@ -62,14 +64,9 @@ def generateLogs(DIRECTORY,date,no_of_servers, no_of_cpus):
     print('Done.')
 
 
-def generateLogsSimulator(DIRECTORY):
-    today = datetime.now().now().replace(hour=0, minute=0, second=0, microsecond=0)
-    no_of_servers = 1000
-    no_of_cpus = 2
-
-    generateLogs(DIRECTORY, today, no_of_servers,no_of_cpus)
-
-
 if __name__ == "__main__":
-    DIRECTORY = 'data'
-    generateLogsSimulator(DIRECTORY)
+    if len(sys.argv) < 2:
+        print('Please give path to directory.')
+        print('Usage: python generate.py [Path to Directory]')
+    DATA_PATH = sys.argv[1]
+    generateLogs(DATA_PATH)
