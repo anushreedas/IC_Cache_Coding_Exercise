@@ -6,7 +6,7 @@ where each server has 2 CPUs, and writes the data to csv files in the provided d
 """
 import sys
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from random import randrange
 import ipaddress
@@ -35,8 +35,8 @@ def generateLogs(DATA_PATH,date=TODAY,no_of_servers=1000, no_of_cpus=2):
     """
     print('Generating logs for %d servers at DATA_PATH=[%s] for date: %s'%(no_of_servers,DATA_PATH,date.date()))
 
-    # get timestamp in Unix time for given date
-    timestamp = int(datetime.timestamp(date))
+    # # get timestamp in Unix time for given date
+    # timestamp = int(datetime.timestamp(date))
 
     # calculate mask for network from given number of servers
     mask = 32-math.ceil(math.log(no_of_servers, 2))
@@ -45,18 +45,21 @@ def generateLogs(DATA_PATH,date=TODAY,no_of_servers=1000, no_of_cpus=2):
     ip_addresses = [str(ip) for ip in ipaddress.IPv4Network('192.168.0.0/'+str(mask))][:no_of_servers]
 
     for host_ip in ip_addresses:
-        server_path = os.path.join(DATA_PATH,host_ip)
-        createDirectory(server_path)
+        # server_path = os.path.join(DATA_PATH,host_ip)
+        # createDirectory(server_path)
 
         for cpu_id in range(1,no_of_cpus+1):
-            cpu_path = os.path.join(server_path,str(cpu_id))
-            createDirectory(cpu_path)
+            # cpu_path = os.path.join(server_path,str(cpu_id))
+            # createDirectory(cpu_path)
 
             # write log to csv file at path [DIRECTORY/server_ipaddr/cpu_id/timestamp.csv]
-            date_file = os.path.join(cpu_path, str(timestamp)+'.csv')
-            with open(date_file,'w') as f:
+            createDirectory(DATA_PATH)
+            date_file = os.path.join(DATA_PATH, 'logs.csv')
+            with open(date_file,'a') as f:
                 # write log for every minute in a day (24 * 60 minutes)
-                for _ in range(1440):
+                for t in range(1440):
+                    timestamp = int(datetime.timestamp(date+timedelta(minutes = t)))
+                    # print(host_ip,date+timedelta(minutes = t), timestamp)
                     # CPU usage is a random number between 0% to 100%
                     cpu_usage = randrange(0, 100)
                     f.write(str(timestamp)+','+host_ip+','+str(cpu_id)+','+str(cpu_usage)+'\n')
@@ -68,5 +71,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print('Please give path to directory.')
         print('Usage: python generate.py [Path to Directory]')
+        exit(0)
+
     DATA_PATH = sys.argv[1]
     generateLogs(DATA_PATH)
