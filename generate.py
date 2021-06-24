@@ -1,6 +1,6 @@
 """
 This program generates the logs for one day (today) for n (1000) servers,
-where each server has 2 CPUs, and writes the data to csv files in the provided directory path.
+where each server has 2 CPUs, and writes the data to csv file in the provided directory path.
 
 @author : Anushree Das
 """
@@ -12,16 +12,6 @@ from random import randrange
 import ipaddress
 
 TODAY = datetime.now().now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-def createDirectory(dir_path):
-    """
-    Checks if the directory path exists
-    and if it doesn't then it creates it
-    :param dir_path: directory path
-    :return: None
-    """
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
 
 
 def generateLogs(DATA_PATH,date=TODAY,no_of_servers=1000, no_of_cpus=2):
@@ -35,9 +25,6 @@ def generateLogs(DATA_PATH,date=TODAY,no_of_servers=1000, no_of_cpus=2):
     """
     print('Generating logs for %d servers at DATA_PATH=[%s] for date: %s'%(no_of_servers,DATA_PATH,date.date()))
 
-    # # get timestamp in Unix time for given date
-    # timestamp = int(datetime.timestamp(date))
-
     # calculate mask for network from given number of servers
     mask = 32-math.ceil(math.log(no_of_servers, 2))
 
@@ -45,21 +32,17 @@ def generateLogs(DATA_PATH,date=TODAY,no_of_servers=1000, no_of_cpus=2):
     ip_addresses = [str(ip) for ip in ipaddress.IPv4Network('192.168.0.0/'+str(mask))][:no_of_servers]
 
     for host_ip in ip_addresses:
-        # server_path = os.path.join(DATA_PATH,host_ip)
-        # createDirectory(server_path)
-
         for cpu_id in range(1,no_of_cpus+1):
-            # cpu_path = os.path.join(server_path,str(cpu_id))
-            # createDirectory(cpu_path)
 
-            # write log to csv file at path [DIRECTORY/server_ipaddr/cpu_id/timestamp.csv]
-            createDirectory(DATA_PATH)
+            # Checks if the directory path exists and if it doesn't then it creates it
+            if not os.path.exists(DATA_PATH):
+                os.makedirs(DATA_PATH)
+
             date_file = os.path.join(DATA_PATH, 'logs.csv')
             with open(date_file,'a') as f:
                 # write log for every minute in a day (24 * 60 minutes)
                 for t in range(1440):
-                    timestamp = int(datetime.timestamp(date+timedelta(minutes = t)))
-                    # print(host_ip,date+timedelta(minutes = t), timestamp)
+                    timestamp = int(datetime.timestamp(date+timedelta(minutes=t)))
                     # CPU usage is a random number between 0% to 100%
                     cpu_usage = randrange(0, 100)
                     f.write(str(timestamp)+','+host_ip+','+str(cpu_id)+','+str(cpu_usage)+'\n')
