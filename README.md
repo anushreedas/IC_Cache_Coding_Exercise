@@ -13,14 +13,14 @@ Python 3.7
 
 ## How to run and sample output:
 ### To run generate.sh in Linux:
-./generate.sh [DATA_PATH]
+> ./generate.sh [DATA_PATH]
 
 ### Sample Output:
 Generating logs for 1000 servers at DATA_PATH=[DATA_PATH] for date: 2021-06-24
 Done.
 
 ### To run query.sh in Linux:
-./query.sh [DATA_PATH]
+> ./query.sh [DATA_PATH]
 
 ### Sample Output:
 >QUERY 192.168.1.10 1 2021-06-23 01:05 2021-06-23 01:10
