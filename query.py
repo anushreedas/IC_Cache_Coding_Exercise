@@ -61,7 +61,7 @@ def getQuery(DATA_PATH):
 
     # loop until user inputs 'EXIT'
     while True:
-        # take commamd as input from user in stdin
+        # take command as input from user in stdin
         command = input('\n>')
 
         # if user inputs 'EXIT' then stop loop
