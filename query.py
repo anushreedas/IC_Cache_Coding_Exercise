@@ -40,7 +40,7 @@ def getQuery(DATA_PATH):
     f.close()
 
     while True:
-        command = input('>')
+        command = input('\n>')
         if str.lower(command) == 'exit':
             break
 
@@ -63,70 +63,29 @@ def getQuery(DATA_PATH):
 
         # check date time format
         start_time = words[3]+' '+words[4]
-        end_time = words[5]+ ' '+words[6]
+        end_time = words[5]+' '+words[6]
 
         if not checkTimeFormat(start_time,'start_time') or not checkTimeFormat(end_time,'end_time'):
             continue
 
         start_time = datetime.datetime.strptime(start_time,"%Y-%m-%d %H:%M")
         end_time = datetime.datetime.strptime(end_time,"%Y-%m-%d %H:%M")
-        print(start_time,end_time)
 
-        # cur.execute("SELECT * FROM LOGS")
-        # con.commit()
-        #
-        # rows = cur.fetchall()
-        # print(rows)
+        print('\nCPU%s usage on %s:\n'%(cpu_id,ip))
 
-        cur.execute("SELECT * FROM LOGS where IP = '%s' and cpu_id = %s and timestamp >= %d and timestamp < %d"
-                    % (ip,cpu_id,start_time.timestamp(),end_time.timestamp()))
+        cur.execute("SELECT * FROM LOGS WHERE IP = '%s' AND cpu_id = %s AND timestamp >= %d AND timestamp < %d "
+                    "ORDER BY timestamp" % (ip,cpu_id,start_time.timestamp(),end_time.timestamp()))
         con.commit()
 
         rows = cur.fetchall()
-        print(len(rows))
-
+        result = []
         for row in rows:
-            print('(%s, %s%%)'%(datetime.datetime.fromtimestamp(row[0]),row[3]))
-
+            result.append('(%s, %s%%)'%(datetime.datetime.fromtimestamp(row[0]),row[3]))
+        print(*result,sep=',')
 
     cur.close()
     con.commit()
     con.close()
-
-
-        # # check if directory exists
-        # if not checkPath(os.path.join(DATA_PATH,ip)):
-        #     print('Incorrect IP address')
-        #     continue
-        #
-        # if not checkPath(os.path.join(DATA_PATH,ip,cpu_id)):
-        #     print('Incorrect CPU Id address')
-        #     continue
-        #
-        # logs = []
-        # # check if csv exists
-        # for i in range(len(timestamps)):
-        #     if not os.path.isfile(os.path.join(DATA_PATH, ip, cpu_id, (str(timestamps[i])+'.csv'))):
-        #         print('Incorrect time interval.')
-        #         print("Logs for day:",datetime.datetime.fromtimestamp(timestamps[i]).date()," is not available.")
-        #         continue
-        #     if i == 0:
-        #         print("CPU",cpu_id," usage on ",ip)
-        #     with open(os.path.join(DATA_PATH, ip, cpu_id, (str(timestamps[i])+'.csv'))) as f:
-        #         lines = f.readlines()
-        #         if len(timestamps) == 1:
-        #             # no_minutes = int((end_time-start_time).total_seconds()/60)
-        #             # print(start_time.hour,start_time.hour*60,start_time.minute,(start_time.hour*60)+start_time.minute )
-        #             # print(end_time.hour,end_time.hour*60,end_time.minute,(end_time.hour*60)+end_time.minute )
-        #             start_index = (start_time.hour*60)+start_time.minute
-        #             end_index = (end_time.hour*60)+end_time.minute
-        #             for t in range(start_index,end_index):
-        #                 time = '{:02d}:{:02d}'.format(*divmod(t, 60))
-        #                 usage = lines[t].split(',')[-1].rstrip()
-        #                 print('(%s %s %s%%)'%(datetime.datetime.fromtimestamp(timestamps[i]).date(),time,usage))
-
-
-        # read csv
 
 
 # QUERY 192.168.1.10 1 2021-06-23 01:05 2021-06-23 01:10
